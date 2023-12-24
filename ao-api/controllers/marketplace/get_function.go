@@ -2,6 +2,7 @@ package marketplace
 
 import (
 	"net/http"
+	"encoding/json"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -37,10 +38,21 @@ func (controller *MarketplaceController) GetFunction() gin.HandlerFunc {
 			return
 		}
 
+		repoStatsHandler := controller.GetRepoStats()
+		repoStatsHandler(c)
+
+		var stats map[string]float64
+		if err := json.NewDecoder(c.Request.Body).Decode(&stats); err != nil {
+			logrus.Error("Failed to decode repository stats: ", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "failed to decode repository stats"})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"access":   true,
 			"exist":    true,
 			"function": function,
+			"stats":    stats,
 		})
 	}
 
