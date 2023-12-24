@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import { renderRepoStats } from './repo_stats.js';
 
 ;(async () => {
 	const id = '{{id}}'
@@ -116,5 +117,10 @@
 
 			list.appendChild(clone)
 		})
+
+		// Fetch repository statistics and render the stats table
+		const repoStats = await fetchRepoStats(); // Assumes 'fetchRepoStats' is defined and fetches the repo stats
+		const statsTableHtml = await renderRepoStats(repoStats);
+		root.insertAdjacentHTML('beforeend', statsTableHtml);
 	}
 })()
